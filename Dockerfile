@@ -9,8 +9,8 @@ RUN \
   && rm -rf /var/lib/apt/lists/*
 
 RUN touch /var/log/cron.log db.json
-COPY package.json ./
+COPY app .
 RUN npm install
-COPY ./app .
+RUN aws configure set s3.signature_version s3v4
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

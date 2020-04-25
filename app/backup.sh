@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#set -ex
+set -e
 source /root/project_env.sh
 
 ROOT="/usr/src/app"
@@ -9,20 +9,16 @@ MONTH=`date +%m`
 YEAR=`date +%Y`
 
 cd ${ROOT}
-echo "Backing up footage from ${ROOT}/${DATE}.tar.gz to s3://$S3_BUCKET/${YEAR}/${MONTH}"
+mkdir -p ${ROOT}/Downloads/Completed
+echo "Backing up footage from ${ROOT}/${DATE}.tar.gz to s3://${S3_BUCKET}/${YEAR}/${MONTH}"
 
 cat ${ROOT}/db.json >> ${ROOT}/db.old.json
-rm -f ${ROOT}/db.json
-
-mkdir -p ${ROOT}/Downloads
-echo "Downloading footage..." && node ${ROOT}/downloader.js >> /var/log/cron.log
-
-mv  ${ROOT}/Downloads ${ROOT}/${DATE}
-tar -cvf ${DATE}.tar.gz -C ${ROOT}/${DATE} .
-rm -rf ${ROOT}/${DATE}
+echo "Downloading footage..." && node ${ROOT}/downloader.js
+mkdir -p ${ROOT}/Downloads/Completed/${DATE}
+mv ${ROOT}/Downloads/*.mp4 ${ROOT}/Downloads/Completed/${DATE}/
+tar -cvf ${DATE}.tar.gz -C ${ROOT}/Downloads/Completed/${DATE} ${ROOT}/Downloads/Completed/
+mv ${DATE}.tar.gz ${ROOT}/Downloads/Completed/ 2>/dev/null
+rm -rf ${ROOT}/Downloads/Completed/${DATE}
 
 #Send to S3
-aws s3 cp ${ROOT}/${DATE}.tar.gz s3://${S3_BUCKET}/${YEAR}/${MONTH} --storage-class STANDARD_IA
-
-mkdir -p ${ROOT}/Downloads
-rm -rf ${ROOT}/${DATE}.tar.gz
+aws s3 cp ${ROOT}/Downloads/Completed/${DATE}.tar.gz s3://${S3_BUCKET}/${YEAR}/${MONTH}/${DATE}.tar.gz --storage-class STANDARD_IA
