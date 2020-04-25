@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  logicircle:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - "./Downloads:/usr/src/app/Downloads"
+    restart: unless-stopped
