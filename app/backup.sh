@@ -16,7 +16,8 @@ cat ${ROOT}/db.json >> ${ROOT}/db.old.json
 echo "Downloading footage..." && node ${ROOT}/downloader.js
 mkdir -p ${ROOT}/Downloads/Completed/${DATE}
 mv ${ROOT}/Downloads/*.mp4 ${ROOT}/Downloads/Completed/${DATE}/
-tar -cvf ${DATE}.tar.gz -C ${ROOT}/Downloads/Completed/${DATE} ${ROOT}/Downloads/Completed/
+tar --exclude='*.tar.gz' -cvf ${DATE}.tar.gz -C ${ROOT}/Downloads/Completed/${DATE} ${ROOT}/Downloads/Completed/
+
 mv ${DATE}.tar.gz ${ROOT}/Downloads/Completed/ 2>/dev/null
 rm -rf ${ROOT}/Downloads/Completed/${DATE}
 
