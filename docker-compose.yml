@@ -7,4 +7,5 @@ services:
       - .env
     volumes:
       - "./Downloads:/usr/src/app/Downloads"
+      - "/Volumes/logicircle-backup:/usr/src/app/network_drive"
     restart: unless-stopped
